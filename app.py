@@ -210,16 +210,25 @@ def load_data():
 @st.cache_resource
 def load_models():
     try:
-        from keras.models import load_model as keras_load
         ml_model = joblib.load("models/ml_emission_forecast.pkl")
-        dl_model = keras_load("models/dl_climate_risk.keras", compile=False)
-        return ml_model, dl_model
+
+        # Try loading DL model (optional for cloud)
+        try:
+            from tensorflow.keras.models import load_model as keras_load
+            dl_model = keras_load("models/dl_climate_risk.keras", compile=False)
+            DL_ENABLED = True
+        except:
+            dl_model = None
+            DL_ENABLED = False
+
+        return ml_model, dl_model, DL_ENABLED
+
     except Exception as e:
         st.sidebar.warning(f"⚠️ Model load issue: {str(e)[:60]}")
-        return None, None
+        return None, None, False
 
 df = load_data()
-ml_model, dl_model = load_models()
+ml_model, dl_model, DL_ENABLED = load_models()
 kpis = compute_kpis(df)
 
 # ──────────────────────────────────────────────────────────────────────────────
