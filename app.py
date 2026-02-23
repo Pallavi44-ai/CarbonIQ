@@ -214,7 +214,7 @@ def load_models():
 
         # Try loading DL model (optional for cloud)
         try:
-            from tensorflow.keras.models import load_model as keras_load
+            
             dl_model = keras_load("models/dl_climate_risk.keras", compile=False)
             DL_ENABLED = True
         except:
